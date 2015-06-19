@@ -1,0 +1,31 @@
+<div class="chat">
+    <div class="chat">
+    <input type="text" class="text">
+    <button class="say">発言</button>    
+    <ul class="content_list">
+    </ul>
+</div>
+
+<script type="text/javascript">
+    $(function(){
+        io.socket.on('connect',function(){
+            //watchしてpublishCreateを受け取れるようにする
+            io.socket.get('/chat/watch');
+ 
+            io.socket.on('chat',function(obj){
+                if (obj.verb == 'created') { //作成された場合
+                console.log(obj.data);
+                $('.content_list').append('<li>'+obj.data.text+'</li>');
+                }
+            });
+        });
+    })
+ 
+    //発言ボタン
+    $('button.say').on('click',function(){
+        var text = $('input.text').val();
+        $.post('/chat/create',{text: text});
+        console.log('push text:'+ text);
+        $('input.text').val('');
+    })
+</script>
